@@ -71,4 +71,21 @@ router.post('/asignarFoto', verificarToken, async (req, res) => {
     })
 })
 
+router.post('/checkEmail', async (req, resp) => {
+    const { email } = req.body
+    const encontrado = await Usuario.find({ email })
+    return resp.json({num: encontrado.length})
+})
+
+router.post('/checkTelefono', async (req, resp) => {
+    const { telefono } = req.body
+    const encontrado = await Usuario.find({ telefono })
+    return resp.json({num: encontrado.length})
+})
+
+router.get('/trabajadores', async (req,resp) => {
+    const trabajadores = await Usuario.find({trabajador:true})
+    return resp.json({trabajadores})
+})
+
 module.exports = router
