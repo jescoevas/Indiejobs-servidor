@@ -11,8 +11,8 @@ class FileSystem{
             const pathFoto = this.getCarpetaFoto(usuarioId)
             const foto = this.getFoto(usuarioId)
             if(foto.length > 0) this.eliminaFoto(pathFoto, foto)
-            const nombreImagen = this.generarNombreUnico(imagen.name)
-            imagen.mv(`${pathFoto}/${nombreImagen}`, (err) => {
+            const nombreFoto = this.generarNombreUnico(usuarioId,imagen.mimetype)
+            imagen.mv(`${pathFoto}/${nombreFoto}`, (err) => {
                 if(err) reject(err)
                 else resolve()
             })
@@ -53,11 +53,11 @@ class FileSystem{
         return pathUsuario
     }
 
-    generarNombreUnico(nombre){
-        const arr = nombre.split('.')
+    generarNombreUnico(usuarioId,tipo){
+        console.log(tipo)
+        const arr = tipo.split('/')
         const ext = arr[arr.length-1]
-        const idUnico = uniqid()
-        return `${idUnico}.${ext}`
+        return `${usuarioId}.${ext}`
     }
 
 }

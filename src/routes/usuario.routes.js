@@ -27,7 +27,8 @@ router.post('/registro', async (req, res) => {
         const usuarioDB = await Usuario.create({...req.body})
         res.json({
             msg:'Registro realizado con exito',
-            usuarioDB
+            usuarioDB,
+            token:Token.getJwtToken(usuarioDB)
         })
     }
 
@@ -43,15 +44,16 @@ router.post('/login', async (req, res) => {
         return res.json({msg:"Password incorrecta"})
     res.json({
         msg:"Login realizado con exito",
+        usuarioId:usuario._id,
         token:Token.getJwtToken(usuario)
     })
 })
 
-router.get('/avatar', verificarToken, (req, res) => {
-    const id = req.usuario._id
-    const path = fileSystem.getCarpetaAvatar(id)
-    const avatar = fileSystem.getAvatar(id)
-    const pathCompleto = `${path}/${avatar}`
+router.get('/:usuarioId/foto', (req, res) => {
+    const {usuarioId} = req.params
+    const path = fileSystem.getCarpetaFoto(usuarioId)
+    const foto = fileSystem.getFoto(usuarioId)
+    const pathCompleto = `${path}/${foto}`
     res.sendFile(pathCompleto)
 })
 
@@ -59,6 +61,7 @@ router.post('/asignarFoto', verificarToken, async (req, res) => {
     if(!req.files) 
         return res.json({msg:"No se han enviado archivos"})
     const {foto} = req.files
+    console.log('foto servidor', foto)
     if(!foto.mimetype.includes('image')) 
         return res.json({msg:"No se ha subido ninguna foto"})
     let usuario = req.usuario
