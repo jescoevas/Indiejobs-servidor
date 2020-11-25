@@ -42,27 +42,25 @@ router.post('/registro', async (req, res) => {
 
 router.put('/editar', async (req, res) => {
 
-    const { email, telefono, id } = req.body
-    delete req.body.id
+    const { email, telefono, id, emailUsuario, telefonoUsuario } = req.body
     const emailEncontrado = await Usuario.find({email})
     const telefonoEncontrado = await Usuario.find({telefono})
 
-    if(emailEncontrado.length > 0){
+    if(emailEncontrado.length > 0 && email !== emailUsuario){
         return res.json({
             msg:'Email existe',
-            usuarioDB:{}
         })
-    }else if(telefonoEncontrado.length > 0){
+    }else if(telefonoEncontrado.length > 0 && telefono !== telefonoUsuario){
         return res.json({
             msg:'Telefono existe',
-            usuarioDB:{}
         })
     }else{
-        const usuarioDB = await Usuario.findByIdAndUpdate(id, req.body, {new:true})
+        delete req.body.id
+        delete req.body.emailUsuario
+        delete req.body.telefonoUsuario
+        await Usuario.findByIdAndUpdate(id, req.body, {new:true})
         res.json({
             msg:'Edicion realizada con exito',
-            usuarioDB,
-            token:Token.getJwtToken(usuarioDB)
         })
     }
 
@@ -123,6 +121,15 @@ router.post('/checkTelefono', async (req, resp) => {
 router.get('/trabajadores', async (req,resp) => {
     const trabajadores = await Usuario.find({trabajador:true})
     return resp.json({trabajadores})
+})
+
+router.get('/trabajadores/cercanos',verificarToken , async (req,resp) => {
+    const usuario = req.usuario
+    const trabajadores = await Usuario.find({trabajador:true, ciudad:usuario.ciudad})
+    console.log(usuario)
+    console.log(trabajadores)
+    const cercanos = trabajadores.filter(trabajador => trabajador._id != usuario._id)
+    return resp.json({cercanos})
 })
 
 module.exports = router
