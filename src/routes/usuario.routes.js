@@ -7,6 +7,12 @@ const FileSystem = require('../tools/file-system')
 const router = Router()
 const fileSystem = new FileSystem()
 
+router.get('/usuario/:usuarioId', async (req, res) => {
+    const {usuarioId} = req.params
+    const usuario = await Usuario.findById(usuarioId)
+    return res.json({usuario})
+})
+
 router.post('/registro', async (req, res) => {
 
     const { email, telefono } = req.body
@@ -34,6 +40,34 @@ router.post('/registro', async (req, res) => {
 
 })
 
+router.put('/editar', async (req, res) => {
+
+    const { email, telefono, id } = req.body
+    delete req.body.id
+    const emailEncontrado = await Usuario.find({email})
+    const telefonoEncontrado = await Usuario.find({telefono})
+
+    if(emailEncontrado.length > 0){
+        return res.json({
+            msg:'Email existe',
+            usuarioDB:{}
+        })
+    }else if(telefonoEncontrado.length > 0){
+        return res.json({
+            msg:'Telefono existe',
+            usuarioDB:{}
+        })
+    }else{
+        const usuarioDB = await Usuario.findByIdAndUpdate(id, req.body, {new:true})
+        res.json({
+            msg:'Edicion realizada con exito',
+            usuarioDB,
+            token:Token.getJwtToken(usuarioDB)
+        })
+    }
+
+})
+
 router.post('/login', async (req, res) => {
     const {email, password} = req.body
     const usuario = await Usuario.findOne({email})
@@ -45,6 +79,7 @@ router.post('/login', async (req, res) => {
     res.json({
         msg:"Login realizado con exito",
         usuarioId:usuario._id,
+        foto:usuario.foto,
         token:Token.getJwtToken(usuario)
     })
 })
@@ -61,7 +96,6 @@ router.post('/asignarFoto', verificarToken, async (req, res) => {
     if(!req.files) 
         return res.json({msg:"No se han enviado archivos"})
     const {foto} = req.files
-    console.log('foto servidor', foto)
     if(!foto.mimetype.includes('image')) 
         return res.json({msg:"No se ha subido ninguna foto"})
     let usuario = req.usuario
