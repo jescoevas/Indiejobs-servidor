@@ -126,8 +126,6 @@ router.get('/trabajadores', async (req,resp) => {
 router.get('/trabajadores/cercanos',verificarToken , async (req,resp) => {
     const usuario = req.usuario
     const trabajadores = await Usuario.find({trabajador:true, ciudad:usuario.ciudad})
-    console.log(usuario)
-    console.log(trabajadores)
     const cercanos = trabajadores.filter(trabajador => trabajador._id != usuario._id)
     return resp.json({cercanos})
 })
