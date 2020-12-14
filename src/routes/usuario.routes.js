@@ -130,4 +130,16 @@ router.get('/trabajadores/cercanos',verificarToken , async (req,resp) => {
     return resp.json({cercanos})
 })
 
+router.post('/buscador', verificarToken, async (req, resp) => {
+    const {empleo, ciudad} = req.body
+    const usuario = req.usuario
+    let todos = []
+    if(empleo != '' && ciudad != '') todos = await Usuario.find({trabajador:true, empleo, ciudad}).collation({locale:'es', strength:2})
+    else if(empleo != '') todos = await Usuario.find({trabajador:true, empleo}).collation({locale:'es', strength:2})
+    else if(ciudad != '') todos = await Usuario.find({trabajador:true, ciudad}).collation({locale:'es', strength:2})
+    else todos = await Usuario.find({trabajador:true})
+    const trabajadores = todos.filter(trabajador => trabajador._id != usuario._id)
+    return resp.json({trabajadores})
+})
+
 module.exports = router
