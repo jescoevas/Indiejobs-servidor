@@ -1,16 +1,14 @@
 const path = require('path')
 const fs = require('fs')
 
-class FileSystem{
+class TrabajoFotos{
 
     constructor(){}
 
-    asignarFoto(imagen, usuarioId){
+    asignarFoto(imagen, usuarioId, trabajoId){
         return new Promise((resolve,reject) => {
-            const pathFoto = this.getCarpetaFoto(usuarioId)
-            const foto = this.getFoto(usuarioId)
-            if(foto.length > 0) this.eliminaFoto(pathFoto, foto)
-            const nombreFoto = this.generarNombreUnico(usuarioId,imagen.mimetype)
+            const pathFoto = this.getCarpetaTrabajos(usuarioId)
+            const nombreFoto = this.generarNombreUnico(trabajoId,imagen.mimetype)
             imagen.mv(`${pathFoto}/${nombreFoto}`, (err) => {
                 if(err) reject(err)
                 else resolve()
@@ -18,24 +16,9 @@ class FileSystem{
         })
     }
 
-    eliminaFoto(path, foto){
-        const pathCompleto = path + `/${foto}`
-        try {
-            fs.unlinkSync(pathCompleto)
-        }catch(err) {
-            console.error(err)
-        }
-    }
-
-    getFoto(usuarioId){
-        const pathFoto = this.getCarpetaFoto(usuarioId)
-        const col = fs.readdirSync(pathFoto)
-        return col[0] || []
-    }
-
-    getCarpetaFoto(usuarioId){
+    getCarpetaTrabajos(usuarioId){
         const pathUsuario = this.getCarpetaUsuario(usuarioId)
-        const pathFoto = pathUsuario + '/foto'
+        const pathFoto = `${pathUsuario}/trabajos`
         const existeFoto = fs.existsSync(pathFoto)
         if(!existeFoto){
             fs.mkdirSync(pathFoto)
@@ -52,13 +35,20 @@ class FileSystem{
         return pathUsuario
     }
 
-    generarNombreUnico(usuarioId,tipo){
+    generarNombreUnico(trabajoId,tipo){
         console.log(tipo)
         const arr = tipo.split('/')
         const ext = arr[arr.length-1]
-        return `${usuarioId}.${ext}`
+        return `${trabajoId}.${ext}`
+    }
+
+    getFoto(usuarioId, trabajoId){
+        const pathTrabajos = this.getCarpetaTrabajos(usuarioId)
+        const col = fs.readdirSync(pathTrabajos)
+        const foto = col.filter(f => f.includes(trabajoId))
+        return foto[0]
     }
 
 }
 
-module.exports = FileSystem
+module.exports = TrabajoFotos

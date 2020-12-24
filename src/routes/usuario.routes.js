@@ -2,10 +2,10 @@ const { Router } =  require('express')
 const Usuario = require('../models/usuario.model')
 const Token = require('../tools/token')
 const verificarToken = require('../tools/verificarToken')
-const FileSystem = require('../tools/file-system')
+const UsuarioFotos = require('../tools/usuario-fotos')
 
 const router = Router()
-const fileSystem = new FileSystem()
+const usuarioFotos = new UsuarioFotos()
 
 router.get('/usuario/:usuarioId', async (req, res) => {
     const {usuarioId} = req.params
@@ -84,8 +84,8 @@ router.post('/login', async (req, res) => {
 
 router.get('/:usuarioId/foto', (req, res) => {
     const {usuarioId} = req.params
-    const path = fileSystem.getCarpetaFoto(usuarioId)
-    const foto = fileSystem.getFoto(usuarioId)
+    const path = usuarioFotos.getCarpetaFoto(usuarioId)
+    const foto = usuarioFotos.getFoto(usuarioId)
     const pathCompleto = `${path}/${foto}`
     res.sendFile(pathCompleto)
 })
@@ -97,8 +97,8 @@ router.post('/asignarFoto', verificarToken, async (req, res) => {
     if(!foto.mimetype.includes('image')) 
         return res.json({msg:"No se ha subido ninguna foto"})
     let usuario = req.usuario
-    await fileSystem.asignarFoto(foto, usuario._id)
-    const fotoUsuario = fileSystem.getFoto(usuario._id)
+    await usuarioFotos.asignarFoto(foto, usuario._id)
+    const fotoUsuario = usuarioFotos.getFoto(usuario._id)
     usuario.foto = fotoUsuario
     await Usuario.findByIdAndUpdate(usuario._id, usuario, {new:true})
     res.json({
