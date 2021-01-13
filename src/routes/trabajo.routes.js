@@ -9,9 +9,9 @@ const trabajoFotos = new TrabajoFotos()
 
 router.post('/usuario/trabajos', async (req, resp) => {
     const { id } = req.body
-    const receptor = await Usuario.findById(id)
-    const reseñas = await Trabajo.find({receptor})
-    return resp.json({reseñas})
+    const autor = await Usuario.findById(id)
+    const trabajos = await Trabajo.find({autor})
+    return resp.json({trabajos})
 })
 
 router.post('/trabajo/create',verificarToken, async (req, resp) => {
