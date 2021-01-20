@@ -17,9 +17,13 @@ router.post('/usuario/trabajos', async (req, resp) => {
 router.post('/trabajo/create',verificarToken, async (req, resp) => {
     const idAutor = req.usuario._id
     const { cuerpo } = req.body
+    console.log(cuerpo)
     const autor = await Usuario.findById(idAutor)
     const trabajoDB = await Trabajo.create({autor, cuerpo})
-    resp.json({trabajoDB})
+    resp.json({
+        msg:'Exito',
+        trabajoDB
+    })
 })
 
 router.post('/trabajo/asignarFoto', verificarToken, async (req, res) => {
@@ -48,5 +52,10 @@ router.get('/:usuarioId/:trabajoId/foto', (req, res) => {
     res.sendFile(pathCompleto)
 })
 
+router.get('/trabajo/:trabajoId', async (req, res) => {
+    const {trabajoId} = req.params
+    const trabajo = await Trabajo.findById(trabajoId)
+    return res.json({trabajo})
+})
 
 module.exports = router
