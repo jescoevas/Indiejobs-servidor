@@ -18,7 +18,7 @@ const trabajoSchema = new Schema({
     },
     estrellas:{
         type:Number,
-        default:0
+        //default:0
     },
 })
 

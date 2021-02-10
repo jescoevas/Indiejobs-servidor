@@ -22,6 +22,7 @@ app.use(fileUpload())
 app.use('/indiejobs/api/', require('../routes/usuario.routes'))
 app.use('/indiejobs/api/', require('../routes/reseña.routes'))
 app.use('/indiejobs/api/', require('../routes/trabajo.routes'))
+app.use('/indiejobs/api/', require('../routes/valoracion.routes'))
 
 //Inicio
 function iniciarServidor() {

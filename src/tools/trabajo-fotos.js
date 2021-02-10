@@ -36,7 +36,6 @@ class TrabajoFotos{
     }
 
     generarNombreUnico(trabajoId,tipo){
-        console.log(tipo)
         const arr = tipo.split('/')
         const ext = arr[arr.length-1]
         return `${trabajoId}.${ext}`

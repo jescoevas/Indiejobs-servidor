@@ -16,10 +16,9 @@ router.post('/usuario/trabajos', async (req, resp) => {
 
 router.post('/trabajo/create',verificarToken, async (req, resp) => {
     const idAutor = req.usuario._id
-    const { cuerpo } = req.body
-    console.log(cuerpo)
+    const { cuerpo, estrellas } = req.body
     const autor = await Usuario.findById(idAutor)
-    const trabajoDB = await Trabajo.create({autor, cuerpo})
+    const trabajoDB = await Trabajo.create({autor, cuerpo, estrellas})
     resp.json({
         msg:'Exito',
         trabajoDB
@@ -57,5 +56,21 @@ router.get('/trabajo/:trabajoId', async (req, res) => {
     const trabajo = await Trabajo.findById(trabajoId)
     return res.json({trabajo})
 })
+
+router.post('/trabajos/top', verificarToken, async (req, res) => {
+    const { tipo } = req.body
+    let trabajos = await Trabajo.find({}).sort([['estrellas', -1]])
+    if(tipo == 'local'){
+        const ciudad = req.usuario.ciudad
+        let res = []
+        for (let i = 0; i < trabajos.length; i++) {
+            const trabajo = trabajos[i];
+            const trabajador = await Usuario.findById(trabajo.autor)
+            if(trabajador.ciudad == ciudad) res.push(trabajo)
+        }
+    }
+    return res.json({trabajos})
+})
+
 
 module.exports = router

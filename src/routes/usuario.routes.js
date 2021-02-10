@@ -3,6 +3,7 @@ const Usuario = require('../models/usuario.model')
 const Token = require('../tools/token')
 const verificarToken = require('../tools/verificarToken')
 const UsuarioFotos = require('../tools/usuario-fotos')
+const Trabajo = require('../models/trabajo.model')
 
 const router = Router()
 const usuarioFotos = new UsuarioFotos()
@@ -141,5 +142,47 @@ router.post('/buscador', verificarToken, async (req, resp) => {
     const trabajadores = todos.filter(trabajador => trabajador._id != usuario._id)
     return resp.json({trabajadores})
 })
+
+router.post('/trabajadores/top',verificarToken , async (req,resp) => {
+    const { tipo } = req.body
+    let col = null
+    if(tipo == 'local'){
+        const usuario = req.usuario
+        col = await Usuario.find({trabajador:true, ciudad:usuario.ciudad})
+    }else{
+        col = await Usuario.find({trabajador:true})
+    }
+    const trabajadores = await ordenar(col)
+    return resp.json({trabajadores})
+
+})
+
+ordenar = async(col) => {
+    let listo = false;
+    while (!listo) {
+        listo = true;
+        for (let i = 1; i < col.length; i += 1) {
+            let estrellasA = 0
+            let estrellasB = 0
+            const trabajosA = await Trabajo.find({autor:col[i - 1]})
+            const trabajosB = await Trabajo.find({autor:col[i]})
+            for (let index = 0; index < trabajosA.length; index++) {
+                const trabajo = trabajosA[index];
+                estrellasA+=trabajo.estrellas
+            }
+            for (let index = 0; index < trabajosB.length; index++) {
+                const trabajo = trabajosB[index];
+                estrellasB+=trabajo.estrellas
+            }
+            if (estrellasA < estrellasB) {
+                listo = false;
+                let tmp = col[i - 1];
+                col[i - 1] = col[i];
+                col[i] = tmp;
+            }
+        }
+    }
+    return col;
+}
 
 module.exports = router
