@@ -21,4 +21,9 @@ router.post('/resena/create',verificarToken, async (req, resp) => {
     resp.json({reseñaDB})
 })
 
+router.get('/resenas/ultimas', async (req, res) => {
+    let resenas = await Reseña.find({}).sort([['fecha', -1]]).limit(5)
+    return res.json({resenas})
+})
+
 module.exports = router

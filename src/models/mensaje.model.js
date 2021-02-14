@@ -1,11 +1,11 @@
 const {Schema, model } = require('mongoose')
 
-const reseñaSchema = new Schema({
-    autor:{
+const mensajeSchema = new Schema({
+    chat:{
         type:Schema.Types.ObjectId,
-        ref:'Usuario'
+        ref:'Chat'
     },
-    receptor:{
+    autor:{
         type:Schema.Types.ObjectId,
         ref:'Usuario'
     },
@@ -19,4 +19,4 @@ const reseñaSchema = new Schema({
     },
 })
 
-module.exports = model('Reseña', reseñaSchema)
+module.exports = model('Mensaje', mensajeSchema)

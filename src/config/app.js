@@ -23,6 +23,7 @@ app.use('/indiejobs/api/', require('../routes/usuario.routes'))
 app.use('/indiejobs/api/', require('../routes/reseña.routes'))
 app.use('/indiejobs/api/', require('../routes/trabajo.routes'))
 app.use('/indiejobs/api/', require('../routes/valoracion.routes'))
+app.use('/indiejobs/api/', require('../routes/chat.routes'))
 
 //Inicio
 function iniciarServidor() {
