@@ -29,9 +29,9 @@ router.post('/chat/create', verificarToken, async(req, resp) => {
 
 router.post('/mensaje/create', verificarToken, async(req, resp) => {
     const autor = req.usuario
-    const { chatId, cuerpo } = req.body
+    const { chatId, cuerpo, fecha } = req.body
     const chat = await Chat.findById(chatId)
-    const mensaje = await Mensaje.create({ chat, autor, cuerpo })
+    const mensaje = await Mensaje.create({ chat, autor, cuerpo, fecha })
     resp.json({ mensaje })
 })
 

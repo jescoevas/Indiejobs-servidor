@@ -1,23 +1,22 @@
-const {Schema, model } = require('mongoose')
+const { Schema, model } = require('mongoose')
 
 const trabajoSchema = new Schema({
-    autor:{
-        type:Schema.Types.ObjectId,
-        ref:'Usuario'
+    autor: {
+        type: Schema.Types.ObjectId,
+        ref: 'Usuario'
     },
-    cuerpo:{
-        type:String,
-        required:[true, 'Cuerpo necesario']
+    cuerpo: {
+        type: String,
+        required: [true, 'Cuerpo necesario']
     },
-    foto:{
-        type:String
+    foto: {
+        type: String
     },
-    fecha:{
-        type:Date,
-        default:new Date()
+    fecha: {
+        type: Date,
     },
-    estrellas:{
-        type:Number,
+    estrellas: {
+        type: Number,
         //default:0
     },
 })
