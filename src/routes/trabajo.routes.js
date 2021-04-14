@@ -57,7 +57,7 @@ router.get('/trabajo/:trabajoId', async(req, res) => {
     return res.json({ trabajo })
 })
 
-router.post('/trabajos/top', verificarToken, async(req, res) => {
+router.post('/trabajos/top', verificarToken, async(req, resp) => {
     const { tipo } = req.body
     let trabajos = await Trabajo.find({}).sort([
         ['estrellas', -1]
@@ -70,8 +70,9 @@ router.post('/trabajos/top', verificarToken, async(req, res) => {
             const trabajador = await Usuario.findById(trabajo.autor)
             if (trabajador.ciudad == ciudad) res.push(trabajo)
         }
+        return resp.json({ trabajos: res })
     }
-    return res.json({ trabajos })
+    return resp.json({ trabajos })
 })
 
 
