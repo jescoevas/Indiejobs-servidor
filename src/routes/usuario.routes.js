@@ -4,6 +4,7 @@ const Token = require('../tools/token')
 const verificarToken = require('../tools/verificarToken')
 const UsuarioFotos = require('../tools/usuario-fotos')
 const Trabajo = require('../models/trabajo.model')
+const Seguimiento = require('../models/seguimiento.model')
 
 const router = Router()
 const usuarioFotos = new UsuarioFotos()
@@ -145,20 +146,28 @@ router.post('/buscador', verificarToken, async(req, resp) => {
 })
 
 router.post('/trabajadores/top', verificarToken, async(req, resp) => {
-    const { tipo } = req.body
+    const { tipo, orden } = req.body
     let col = null
-    if (tipo == 'local') {
+    if (tipo == 'Local') {
         const usuario = req.usuario
         col = await Usuario.find({ trabajador: true, ciudad: usuario.ciudad })
     } else {
         col = await Usuario.find({ trabajador: true })
     }
-    const trabajadores = await ordenar(col)
-    return resp.json({ trabajadores })
 
+    let trabajadores = []
+    if (orden == 'Estrellas') {
+        trabajadores = await ordenarPorEstrellas(col)
+    } else if (orden == 'Seguidores') {
+        trabajadores = await ordenarPorSeguidores(col)
+    } else {
+        trabajadores = await ordenarPorTrabajos(col)
+    }
+
+    return resp.json({ trabajadores })
 })
 
-ordenar = async(col) => {
+ordenarPorEstrellas = async(col) => {
     let listo = false;
     while (!listo) {
         listo = true;
@@ -176,6 +185,42 @@ ordenar = async(col) => {
                 estrellasB += trabajo.estrellas
             }
             if (estrellasA < estrellasB) {
+                listo = false;
+                let tmp = col[i - 1];
+                col[i - 1] = col[i];
+                col[i] = tmp;
+            }
+        }
+    }
+    return col;
+}
+
+ordenarPorSeguidores = async(col) => {
+    let listo = false;
+    while (!listo) {
+        listo = true;
+        for (let i = 1; i < col.length; i += 1) {
+            const seguidoresA = await Seguimiento.find({ seguido: col[i - 1] })
+            const seguidoresB = await Seguimiento.find({ seguido: col[i] })
+            if (seguidoresA < seguidoresB) {
+                listo = false;
+                let tmp = col[i - 1];
+                col[i - 1] = col[i];
+                col[i] = tmp;
+            }
+        }
+    }
+    return col;
+}
+
+ordenarPorTrabajos = async(col) => {
+    let listo = false;
+    while (!listo) {
+        listo = true;
+        for (let i = 1; i < col.length; i += 1) {
+            const trabajosA = await Trabajo.find({ autor: col[i - 1] })
+            const trabajosB = await Trabajo.find({ autor: col[i] })
+            if (trabajosA.length < trabajosB.length) {
                 listo = false;
                 let tmp = col[i - 1];
                 col[i - 1] = col[i];

@@ -11,7 +11,7 @@ const app = express()
 app.set('port', puerto)
 
 //Middlewares
-app.use(bodyParser.urlencoded({extended:true}))
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(cors({ origin: '*' }));
 
@@ -24,6 +24,7 @@ app.use('/indiejobs/api/', require('../routes/reseña.routes'))
 app.use('/indiejobs/api/', require('../routes/trabajo.routes'))
 app.use('/indiejobs/api/', require('../routes/valoracion.routes'))
 app.use('/indiejobs/api/', require('../routes/chat.routes'))
+app.use('/indiejobs/api/', require('../routes/seguimiento.routes'))
 
 //Inicio
 function iniciarServidor() {

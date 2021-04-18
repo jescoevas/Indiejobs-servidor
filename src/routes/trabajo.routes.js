@@ -11,7 +11,7 @@ router.post('/usuario/trabajos', async(req, resp) => {
     const { id } = req.body
     const autor = await Usuario.findById(id)
     const trabajos = await Trabajo.find({ autor })
-    return resp.json({ trabajos })
+    return resp.json({ trabajos, num: trabajos.length })
 })
 
 router.post('/trabajo/create', verificarToken, async(req, resp) => {
