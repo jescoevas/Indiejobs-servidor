@@ -1,6 +1,7 @@
 const { Router } = require('express')
 const Trabajo = require('../models/trabajo.model')
 const Usuario = require('../models/usuario.model')
+const Valoracion = require('../models/valoracion.model')
 const TrabajoFotos = require('../tools/trabajo-fotos')
 const verificarToken = require('../tools/verificarToken')
 
@@ -75,5 +76,17 @@ router.post('/trabajos/top', verificarToken, async(req, resp) => {
     return resp.json({ trabajos })
 })
 
+router.get("/trabajos/mis-valorados", verificarToken, async(req, resp) => {
+    const autor = req.usuario
+    const valoraciones = await Valoracion.find({ autor })
+    let trabajos = []
+    for (let i = 0; i < valoraciones.length; i++) {
+        const valoracion = valoraciones[i];
+        const trabajo = await Trabajo.findById(valoracion.trabajo)
+        trabajos.push(trabajo)
+    }
+
+    return resp.json({ trabajos })
+})
 
 module.exports = router
